@@ -1,0 +1,39 @@
+import { useEffect, useState } from "react";
+import { ProductType } from "@/types/product";
+
+export function useGetFeaturedProducts() {
+  const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products?filters[isFeatured][$eq]=true&populate=*`;
+  const [result, setResult] = useState<ProductType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(url);
+        const json = await res.json();
+
+
+                // Filtrar solo productos que tengan attributes completos  antiguooo de IA
+                const validProducts = (json.data || []).filter((product: any) => {
+                  return product && 
+                         product.attributes && 
+                         product.attributes.slug && 
+                         product.attributes.images?.data?.[0]?.attributes?.url;
+                });
+                
+                setResult(validProducts);
+ // hasta aquiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+
+        // setResult(json.data || []); antiguo de Tutorial
+        setLoading(false);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+        setError(errorMessage || "Error fetching featured products");
+        setLoading(false);
+      }
+    })();
+  }, [url]);
+
+  return { loading, result, error };
+}

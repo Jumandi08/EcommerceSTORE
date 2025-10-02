@@ -1,0 +1,30 @@
+--- a/api/useGetFeaturedProducts.tsx
++++ b/api/useGetFeaturedProducts.tsx
+@@ -3,7 +3,7 @@ import { ProductType } from "@/types/product";
+ 
+ export function useGetFeaturedProducts() {
+   const url = \`\${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products?filters[isFeatured][\$eq]=true&populate=*\`;
+-  const [result, setResult] = useState<ProductType[]>([]);
++  const [result, setResult] = useState<ProductType[] | null>(null);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState("");
+ 
+@@ -12,6 +12,10 @@ export function useGetFeaturedProducts() {
+       try {
+         const res = await fetch(url);
+         const json = await res.json();
++        
++        if (!res.ok) {
++          throw new Error(\`HTTP error! status: \${res.status}\`);
++        }
+ 
+ 
+                 // Filtrar solo productos que tengan attributes completos  antiguooo de IA
+@@ -29,6 +33,7 @@ export function useGetFeaturedProducts() {
+         setLoading(false);
+       } catch (error: unknown) {
+         const errorMessage = error instanceof Error ? error.message : "Error desconocido";
++        console.error('Error fetching featured products:', errorMessage);
+         setError(errorMessage || "Error fetching featured products");
+         setLoading(false);
+       }
