@@ -60,10 +60,11 @@ module.exports = ({ env }) => {
   };
 
   return {
+    client,
     connection: {
-      client,
-      ...connections[client],
+      ...connections[client].connection,
       acquireConnectionTimeout: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
     },
+    pool: connections[client].pool,
   };
 };
