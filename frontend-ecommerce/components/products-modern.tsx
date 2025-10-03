@@ -121,7 +121,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </div>
 
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-            <span>{product.attributes.category?.data?.categoryName || "Producto"}</span>
+            <span>{product.attributes.category?.data?.attributes?.categoryName || "Producto"}</span>
             {product.attributes.isFeatured && (
               <TrendingUp className="h-3 w-3 text-rose-600" />
             )}

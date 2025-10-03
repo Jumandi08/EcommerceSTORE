@@ -48,6 +48,12 @@ export const useAuth = create(
             }
           )
 
+          // Verificar si la respuesta es JSON
+          const contentType = response.headers.get('content-type')
+          if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('El servidor no está respondiendo correctamente. Verifica que el backend esté funcionando.')
+          }
+
           const data = await response.json()
 
           if (!response.ok) {
@@ -63,6 +69,12 @@ export const useAuth = create(
               },
             }
           )
+
+          // Verificar si la respuesta es JSON
+          const userContentType = userResponse.headers.get('content-type')
+          if (!userContentType || !userContentType.includes('application/json')) {
+            throw new Error('Error al obtener información del usuario.')
+          }
 
           const userData = await userResponse.json()
 
@@ -115,6 +127,12 @@ export const useAuth = create(
             }
           )
 
+          // Verificar si la respuesta es JSON
+          const contentType = response.headers.get('content-type')
+          if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('El servidor no está respondiendo correctamente. Verifica que el backend esté funcionando.')
+          }
+
           const data = await response.json()
 
           if (!response.ok) {
@@ -130,6 +148,12 @@ export const useAuth = create(
               },
             }
           )
+
+          // Verificar si la respuesta es JSON
+          const userContentType = userResponse.headers.get('content-type')
+          if (!userContentType || !userContentType.includes('application/json')) {
+            throw new Error('Error al obtener información del usuario.')
+          }
 
           const userData = await userResponse.json()
 

@@ -228,10 +228,14 @@ const products = [
 ];
 
 interface DemoProduct {
+  id?: string | number;
   name: string;
   price: number;
   category: string;
   rating: number;
+  reviews: number;
+  stock: number;
+  original?: number;
   bg: string;
   hot?: boolean;
   sale?: boolean;
@@ -273,9 +277,11 @@ const ProductCard = ({ p }: { p: DemoProduct }) => {
         <div className="mt-1 text-sm text-zinc-600">En Stock: {p.stock}</div>
         <div className="mt-2 flex items-center gap-2">
           <span className="text-lg font-bold text-rose-600">${p.price.toLocaleString()}</span>
-          <span className="text-sm text-zinc-500 line-through">
-            ${p.original.toLocaleString()}
-          </span>
+          {p.original && (
+            <span className="text-sm text-zinc-500 line-through">
+              ${p.original.toLocaleString()}
+            </span>
+          )}
         </div>
       </CardContent>
       <CardFooter className="px-5 pb-5">
