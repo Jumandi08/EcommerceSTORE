@@ -18,11 +18,11 @@ const Footer = () => {
   };
 
   const quickLinks = [
-    { name: "Sobre nosotros", href: "#" },
-    { name: "Contáctanos", href: "#" },
-    { name: "Términos y Condiciones", href: "#" },
-    { name: "Política de Privacidad", href: "#" },
-    { name: "Preguntas Frecuentes", href: "#" },
+    { name: "Sobre nosotros", href: "/sobre-nosotros" },
+    { name: "Contáctanos", href: "/contactanos" },
+    { name: "Términos y Condiciones", href: "/terminos" },
+    { name: "Política de Privacidad", href: "/privacidad" },
+    { name: "Preguntas Frecuentes", href: "/faq" },
   ];
 
   const categories = [

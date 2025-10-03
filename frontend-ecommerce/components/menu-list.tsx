@@ -39,14 +39,14 @@ const  MenuList = () => {
                   </Link>
                 </NavigationMenuLink>
               </li>
+              <ListItem href="/sobre-nosotros" title="Sobre Nosotros">
+                Conoce más sobre nuestra empresa, misión, visión y valores.
+              </ListItem>
               <ListItem href="/shop" title="Tienda">
                 Accede a toda tu informacion, tus pedidos y mucho mas.
               </ListItem>
               <ListItem href="/offers" title="Ofertas">
                 Seccion dedicada a promociones y descuentos.
-              </ListItem>
-              <ListItem href="/" title="Accesorios">
-                Productos complementarios como repuestos, accesorios especilaes, etc.
               </ListItem>
             </ul>
           </NavigationMenuContent>
