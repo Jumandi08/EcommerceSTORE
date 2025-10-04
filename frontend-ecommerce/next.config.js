@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   output: 'standalone',
   images: {
     remotePatterns: [
@@ -18,6 +17,11 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'api.ansayan.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'via.placeholder.com',
         pathname: '/**',
       },
@@ -26,15 +30,11 @@ const nextConfig = {
         hostname: '*.amazonaws.com',
         pathname: '/**',
       },
-      // Add your production domain here
-      // {
-      //   protocol: 'https',
-      //   hostname: 'yourdomain.com',
-      //   pathname: '/**',
-      // },
     ],
   },
-  // Security headers
+  env: {
+    NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.ansayan.com',
+  },
   async headers() {
     return [
       {
@@ -58,4 +58,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;
