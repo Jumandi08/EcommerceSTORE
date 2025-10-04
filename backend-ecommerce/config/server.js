@@ -17,6 +17,22 @@ module.exports = ({ env }) => ({
   admin: {
     auth: {
       secret: env('ADMIN_JWT_SECRET'),
+      options: {
+        expiresIn: '7d',
+      },
+    },
+    cookies: {
+      secure: env.bool('ADMIN_JWT_COOKIE_SECURE', true),
+      signed: true,
+      httpOnly: true,
+    },
+    refreshToken: {
+      cookie: {
+        secure: env.bool('ADMIN_REFRESH_TOKEN_COOKIE_SECURE', true),
+        signed: true,
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      },
     },
   },
   // HTTP timeout settings
