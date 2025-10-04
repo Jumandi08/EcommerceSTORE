@@ -6,8 +6,8 @@ module.exports = ({ env }) => {
   if (client === 'sqlite') {
     return {
       connection: {
+        client: 'sqlite',
         connection: {
-          client: 'sqlite',
           filename: path.join(__dirname, '..', env('DATABASE_FILENAME', '.tmp/data.db')),
         },
       },
