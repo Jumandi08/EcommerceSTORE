@@ -4,6 +4,9 @@ FROM node:18-alpine AS base
 FROM base AS deps
 WORKDIR /app
 
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++
+
 # Copy package files
 COPY package*.json ./
 RUN npm ci
@@ -11,6 +14,10 @@ RUN npm ci
 # Development stage
 FROM base AS development
 WORKDIR /app
+
+# Install runtime dependencies
+RUN apk add --no-cache python3
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -22,6 +29,10 @@ CMD ["npm", "run", "develop"]
 # Build stage
 FROM base AS builder
 WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
