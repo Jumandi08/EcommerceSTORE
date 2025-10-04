@@ -11,10 +11,15 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - ./backups:/backups
     networks:
       - ecommerce-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-postgres} -d ${DATABASE_NAME:-ecommerce_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   backend:
     build:
@@ -37,15 +42,21 @@ services:
       ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
       TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
       APP_KEYS: ${APP_KEYS}
-    ports:
-      - "1337:1337"
+      HOST: 0.0.0.0
+      PORT: 1337
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - ecommerce-network
     volumes:
-      - ./backend-ecommerce/public:/app/public
       - backend_uploads:/app/public/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1337/_health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
   frontend:
     build:
@@ -56,13 +67,49 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:-http://backend:1337}
-    ports:
-      - "3000:3000"
+      NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:-https://${DOMAIN}}
     depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: ecommerce-nginx
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - frontend
       - backend
     networks:
       - ecommerce-network
+    volumes:
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/logs:/var/log/nginx
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    container_name: ecommerce-certbot
+    restart: unless-stopped
+    volumes:
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:
   postgres_data:

@@ -11,6 +11,12 @@ const nextConfig = {
         pathname: '/**',
       },
       {
+        protocol: 'http',
+        hostname: 'backend',
+        port: '1337',
+        pathname: '/**',
+      },
+      {
         protocol: 'https',
         hostname: 'via.placeholder.com',
         pathname: '/**',
@@ -20,7 +26,35 @@ const nextConfig = {
         hostname: '*.amazonaws.com',
         pathname: '/**',
       },
+      // Add your production domain here
+      // {
+      //   protocol: 'https',
+      //   hostname: 'yourdomain.com',
+      //   pathname: '/**',
+      // },
     ],
+  },
+  // Security headers
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+        ],
+      },
+    ];
   },
 };
 
