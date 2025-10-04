@@ -16,53 +16,28 @@ module.exports = ({ env }) => {
   }
 
   if (client === 'postgres') {
-    if (env('DATABASE_URL')) {
-      return {
-        connection: {
-          client: 'postgres',
-          connectionString: env('DATABASE_URL'),
-          ssl: env.bool('DATABASE_SSL', false) && {
-            rejectUnauthorized: false
-          }
-        },
-        pool: {
-          min: env.int('DATABASE_POOL_MIN', 0),
-          max: env.int('DATABASE_POOL_MAX', 5),
-          acquireTimeoutMillis: env.int('DATABASE_ACQUIRE_TIMEOUT', 60000),
-          createTimeoutMillis: env.int('DATABASE_CREATE_TIMEOUT', 60000),
-          destroyTimeoutMillis: env.int('DATABASE_DESTROY_TIMEOUT', 5000),
-          idleTimeoutMillis: env.int('DATABASE_IDLE_TIMEOUT', 600000),
-          reapIntervalMillis: env.int('DATABASE_REAP_INTERVAL', 1000),
-          createRetryIntervalMillis: env.int('DATABASE_CREATE_RETRY_INTERVAL', 200),
-        },
-      };
-    }
-
     return {
       connection: {
         client: 'postgres',
-        host: env('DATABASE_HOST', 'localhost'),
-        port: env.int('DATABASE_PORT', 5432),
-        database: env('DATABASE_NAME', 'Ecomerce-store'),
-        user: env('DATABASE_USERNAME', 'postgres'),
-        password: env('DATABASE_PASSWORD'),
-        ssl: env.bool('DATABASE_SSL', false) && {
-          key: env('DATABASE_SSL_KEY', undefined),
-          cert: env('DATABASE_SSL_CERT', undefined),
-          ca: env('DATABASE_SSL_CA', undefined),
-          capath: env('DATABASE_SSL_CAPATH', undefined),
-          cipher: env('DATABASE_SSL_CIPHER', undefined),
-          rejectUnauthorized: env.bool('DATABASE_SSL_REJECT_UNAUTHORIZED', true),
+        connection: {
+          host: env('DATABASE_HOST', 'localhost'),
+          port: env.int('DATABASE_PORT', 5432),
+          database: env('DATABASE_NAME', 'Ecomerce-store'),
+          user: env('DATABASE_USERNAME', 'postgres'),
+          password: env('DATABASE_PASSWORD'),
+          ssl: env.bool('DATABASE_SSL', false) && {
+            rejectUnauthorized: env.bool('DATABASE_SSL_REJECT_UNAUTHORIZED', true),
+          },
         },
         schema: env('DATABASE_SCHEMA', 'public'),
       },
       pool: {
-        min: env.int('DATABASE_POOL_MIN', 0),
-        max: env.int('DATABASE_POOL_MAX', 5),
+        min: env.int('DATABASE_POOL_MIN', 2),
+        max: env.int('DATABASE_POOL_MAX', 10),
         acquireTimeoutMillis: env.int('DATABASE_ACQUIRE_TIMEOUT', 60000),
         createTimeoutMillis: env.int('DATABASE_CREATE_TIMEOUT', 60000),
         destroyTimeoutMillis: env.int('DATABASE_DESTROY_TIMEOUT', 5000),
-        idleTimeoutMillis: env.int('DATABASE_IDLE_TIMEOUT', 600000),
+        idleTimeoutMillis: env.int('DATABASE_IDLE_TIMEOUT', 30000),
         reapIntervalMillis: env.int('DATABASE_REAP_INTERVAL', 1000),
         createRetryIntervalMillis: env.int('DATABASE_CREATE_RETRY_INTERVAL', 200),
       },
