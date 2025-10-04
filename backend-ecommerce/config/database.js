@@ -60,7 +60,10 @@ module.exports = ({ env }) => {
     },
     sqlite: {
       connection: {
-        filename: path.join(__dirname, '..', env('DATABASE_FILENAME', '.tmp/data.db')),
+        connection: {
+          client: 'sqlite',
+          filename: path.join(__dirname, '..', env('DATABASE_FILENAME', '.tmp/data.db')),
+        },
       },
       useNullAsDefault: true,
     },
@@ -68,10 +71,7 @@ module.exports = ({ env }) => {
 
   return {
     client: client,
-    connection: {
-      ...connections[client].connection,
-      acquireConnectionTimeout: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
-    },
+    connection: connections[client].connection,
     ...(connections[client].pool && { pool: connections[client].pool }),
     ...(connections[client].useNullAsDefault && { useNullAsDefault: connections[client].useNullAsDefault }),
   };
