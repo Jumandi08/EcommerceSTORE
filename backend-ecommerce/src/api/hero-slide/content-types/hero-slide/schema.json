@@ -1,0 +1,156 @@
+{
+  "kind": "collectionType",
+  "collectionName": "hero_slides",
+  "info": {
+    "singularName": "hero-slide",
+    "pluralName": "hero-slides",
+    "displayName": "Hero Slide",
+    "description": "Slides del carrusel hero 3D de la página principal"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "badge": {
+      "type": "string",
+      "required": true,
+      "default": "NUEVO"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "highlight": {
+      "type": "string",
+      "required": true
+    },
+    "discount": {
+      "type": "string",
+      "default": "0%"
+    },
+    "productName": {
+      "type": "string",
+      "required": true
+    },
+    "productVariant": {
+      "type": "string"
+    },
+    "price": {
+      "type": "string",
+      "required": true
+    },
+    "spec1Label": {
+      "type": "string",
+      "default": "Cámara"
+    },
+    "spec1Value": {
+      "type": "string",
+      "default": "48MP"
+    },
+    "spec2Label": {
+      "type": "string",
+      "default": "Chip"
+    },
+    "spec2Value": {
+      "type": "string",
+      "default": "A17 Pro"
+    },
+    "model3dType": {
+      "type": "enumeration",
+      "enum": [
+        "smartphone",
+        "laptop",
+        "airpods",
+        "tablet",
+        "smartwatch",
+        "custom-glb"
+      ],
+      "default": "smartphone",
+      "required": true
+    },
+    "model3dColor": {
+      "type": "string",
+      "default": "#1a1a1a",
+      "required": true
+    },
+    "model3dFileUrl": {
+      "type": "string",
+      "required": false,
+      "default": ""
+    },
+    "discountBadge": {
+      "type": "string",
+      "default": "🔥 OFERTA"
+    },
+    "ctaText": {
+      "type": "string",
+      "default": "Comprar Ahora"
+    },
+    "ctaLink": {
+      "type": "string",
+      "default": "/category/all"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0,
+      "required": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "cameraPosition": {
+      "type": "json",
+      "default": {"x": 0, "y": 0, "z": 10}
+    },
+    "modelPosition": {
+      "type": "json",
+      "default": {"x": 0, "y": 0, "z": 0}
+    },
+    "modelRotation": {
+      "type": "json",
+      "default": {"x": 0, "y": 0, "z": 0}
+    },
+    "modelScale": {
+      "type": "float",
+      "default": 1.0
+    },
+    "animationType": {
+      "type": "enumeration",
+      "enum": [
+        "none",
+        "float",
+        "rotate",
+        "pulse",
+        "swing",
+        "bounce",
+        "orbit",
+        "wave",
+        "magnetic"
+      ],
+      "default": "float",
+      "required": true
+    },
+    "animationSpeed": {
+      "type": "enumeration",
+      "enum": [
+        "slow",
+        "normal",
+        "fast"
+      ],
+      "default": "normal",
+      "required": true
+    },
+    "animationIntensity": {
+      "type": "enumeration",
+      "enum": [
+        "subtle",
+        "medium",
+        "strong"
+      ],
+      "default": "medium",
+      "required": true
+    }
+  }
+}

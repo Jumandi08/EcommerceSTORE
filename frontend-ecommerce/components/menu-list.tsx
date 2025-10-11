@@ -14,10 +14,24 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
+import { useGetCategories } from "@/api/getCategories"
+import { useGetSubcategories } from "@/api/getSubcategories"
+import { Loader2, Headphones, Zap, ShieldCheck, Package } from "lucide-react"
 
 
+
+// Mapa de iconos para subcategorías
+const iconMap: Record<string, React.ReactNode> = {
+  'Headphones': <Headphones className="h-5 w-5" />,
+  'Zap': <Zap className="h-5 w-5" />,
+  'ShieldCheck': <ShieldCheck className="h-5 w-5" />,
+  'Package': <Package className="h-5 w-5" />,
+}
 
 const  MenuList = () => {
+  const { loading, result: categories, error } = useGetCategories()
+  const { loading: loadingSubcategories, result: subcategories, error: errorSubcategories } = useGetSubcategories('accesorios')
+
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -52,27 +66,90 @@ const  MenuList = () => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Celulares y repuestos</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Comprar por categoría</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
-              ))}
+            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+              {loading ? (
+                <li className="col-span-2 flex items-center justify-center p-6">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  <span className="ml-2 text-sm text-muted-foreground">Cargando categorías...</span>
+                </li>
+              ) : error ? (
+                <li className="col-span-2 p-6 text-center text-sm text-destructive">
+                  Error al cargar categorías
+                </li>
+              ) : categories && categories.length > 0 ? (
+                categories.map((category) => (
+                  <ListItem
+                    key={category.id}
+                    title={category.categoryName}
+                    href={`/category/${category.slug}`}
+                  >
+                    Explora todos los productos de {category.categoryName}
+                  </ListItem>
+                ))
+              ) : (
+                <li className="col-span-2 p-6 text-center text-sm text-muted-foreground">
+                  No hay categorías disponibles
+                </li>
+              )}
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link href="/Accesorios" className={navigationMenuTriggerStyle()}>
-              Accesorios
-            </Link>
-          </NavigationMenuLink>
+          <NavigationMenuTrigger>Accesorios</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[400px] gap-3 p-6 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+              {loadingSubcategories ? (
+                <li className="col-span-2 flex items-center justify-center p-6">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  <span className="ml-2 text-sm text-muted-foreground">Cargando accesorios...</span>
+                </li>
+              ) : errorSubcategories ? (
+                <li className="col-span-2 p-6 text-center text-sm text-destructive">
+                  Error al cargar subcategorías
+                </li>
+              ) : subcategories && subcategories.length > 0 ? (
+                <>
+                  {/* Header del mega menú */}
+                  <li className="col-span-2 mb-2">
+                    <div className="flex items-center gap-2 pb-2 border-b">
+                      <Package className="h-5 w-5 text-rose-600" />
+                      <h3 className="font-semibold text-lg">Todos los Accesorios</h3>
+                    </div>
+                  </li>
+
+                  {/* Subcategorías */}
+                  {subcategories.map((subcategory) => (
+                    <ListItemWithIcon
+                      key={subcategory.id}
+                      title={subcategory.subcategoryName}
+                      href={`/subcategory/${subcategory.slug}`}
+                      icon={iconMap[subcategory.icon || 'Package'] || iconMap['Package']}
+                    >
+                      {subcategory.description || `Descubre ${subcategory.subcategoryName}`}
+                    </ListItemWithIcon>
+                  ))}
+
+                  {/* Ver todo */}
+                  <li className="col-span-2 mt-2 pt-2 border-t">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        href="/category/accesorios"
+                        className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground text-center font-medium text-rose-600"
+                      >
+                        Ver todos los accesorios →
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                </>
+              ) : (
+                <li className="col-span-2 p-6 text-center text-sm text-muted-foreground">
+                  No hay subcategorías disponibles
+                </li>
+              )}
+            </ul>
+          </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
@@ -80,44 +157,6 @@ const  MenuList = () => {
 }
 
 export default MenuList
-
-const components: { title: string; href: string; description: string }[] = [
-    {
-      title: "Iphone",
-      href: "/category/cargador",
-      description:
-        "En este apartado encontraras todo tipo de cargadores de todas las marcas.",
-    },
-    {
-      title: "Samsung",
-      href: "/category/cargador",
-      description:
-        "En este apartado encontraras todo tipo de cargadores Originales Iphone.",
-    },
-    {
-      title: "Pixel",
-      href: "/docs/primitives/progress",
-      description:
-        "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-    },
-    {
-      title: "Infinix",
-      href: "/docs/primitives/scroll-area",
-      description: "Visually or semantically separates content.",
-    },
-    {
-      title: "Pantallas",
-      href: "/docs/primitives/tabs",
-      description:
-        "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-    },
-    {
-      title: "Baterias",
-      href: "/docs/primitives/tooltip",
-      description:
-        "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-    },
-  ]
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
@@ -144,5 +183,34 @@ const ListItem = React.forwardRef<
   )
 })
 ListItem.displayName = "ListItem"
+
+const ListItemWithIcon = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a"> & { icon?: React.ReactNode }
+>(({ className, title, children, icon, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="flex items-center gap-2">
+            {icon && <span className="text-rose-600">{icon}</span>}
+            <div className="text-sm font-medium leading-none">{title}</div>
+          </div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground ml-7">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  )
+})
+ListItemWithIcon.displayName = "ListItemWithIcon"
 
 

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/hooks/use-cart";
 import { formatPrice } from "@/lib/formatPrice";
 import CartItem from "./components/cart-item";
@@ -16,14 +17,21 @@ import {
   Truck,
   Shield,
   CreditCard,
+  Trash2,
 } from "lucide-react";
 
 export default function Page() {
-  const { items } = useCart();
-  const subtotal = items.reduce((total, item) => {
+  const { items, selectAllItems, deselectAllItems, getSelectedItems, removeSelectedItems } = useCart();
+
+  const selectedItems = getSelectedItems();
+  const allSelected = items.length > 0 && selectedItems.length === items.length;
+  const someSelected = selectedItems.length > 0 && selectedItems.length < items.length;
+
+  // Calculate totals only for selected items
+  const subtotal = selectedItems.reduce((total, item) => {
     return total + (item?.attributes?.price || 0) * (item?.quantity || 1);
   }, 0);
-  const totalItems = items.reduce(
+  const totalItems = selectedItems.reduce(
     (total, item) => total + (item?.quantity || 1),
     0
   );
@@ -32,6 +40,14 @@ export default function Page() {
   const shipping = subtotal > 0 ? (subtotal >= 100 ? 0 : 5.99) : 0;
   const tax = subtotal * 0.12; // 12% IVA
   const total = subtotal + shipping + tax;
+
+  const handleSelectAll = () => {
+    if (allSelected) {
+      deselectAllItems();
+    } else {
+      selectAllItems();
+    }
+  };
 
   const benefits = [
     { Icon: Truck, text: "Envío gratis en compras mayores a $100" },
@@ -103,13 +119,33 @@ export default function Page() {
                   className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
                 >
                   <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        Productos
-                      </h2>
-                      <Badge variant="secondary" className="text-sm">
-                        {totalItems} {totalItems === 1 ? "item" : "items"}
-                      </Badge>
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          checked={allSelected}
+                          onCheckedChange={handleSelectAll}
+                          className={someSelected ? "data-[state=checked]:bg-gray-400" : ""}
+                        />
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                          Seleccionar todo
+                        </h2>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {selectedItems.length > 0 && (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={removeSelectedItems}
+                            className="gap-2"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Eliminar ({selectedItems.length})
+                          </Button>
+                        )}
+                        <Badge variant="secondary" className="text-sm">
+                          {items.length} {items.length === 1 ? "item" : "items"}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
                   <ul className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -171,11 +207,20 @@ export default function Page() {
                 </div>
 
                 <div className="p-6 space-y-4">
+                  {/* Selected items info */}
+                  {selectedItems.length === 0 && items.length > 0 && (
+                    <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                      <p className="text-sm text-amber-700 dark:text-amber-400">
+                        Selecciona productos para ver el resumen
+                      </p>
+                    </div>
+                  )}
+
                   {/* Subtotal */}
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600 dark:text-gray-400">
                       Subtotal ({totalItems}{" "}
-                      {totalItems === 1 ? "producto" : "productos"})
+                      {totalItems === 1 ? "producto seleccionado" : "productos seleccionados"})
                     </span>
                     <span className="font-semibold text-gray-900 dark:text-white">
                       {formatPrice(subtotal)}
@@ -246,11 +291,11 @@ export default function Page() {
                   {/* Checkout Button */}
                   <motion.div whileTap={{ scale: 0.98 }}>
                     <Button
-                      className="w-full h-12 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-base group relative overflow-hidden"
+                      className="w-full h-12 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-base group relative overflow-hidden disabled:opacity-50"
                       onClick={() => {
                         /* TODO: Implement checkout */
                       }}
-                      disabled={items.length === 0}
+                      disabled={selectedItems.length === 0}
                     >
                       <span className="relative z-10 flex items-center justify-center gap-2">
                         Proceder al Pago

@@ -1,38 +1,79 @@
-# E-commerce Full Stack
+# E-commerce Full Stack con Modelos 3D
 
-E-commerce completo con Next.js (frontend) y Strapi (backend).
+E-commerce completo con Next.js 15 (frontend) y Strapi 5 (backend) con visualización 3D interactiva de productos.
 
 ## Stack Tecnológico
 
-- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
-- **Backend**: Strapi 5, Node.js
-- **Base de datos**: PostgreSQL (producción), SQLite (desarrollo)
-- **Deployment**: Docker, Dokploy
+### Frontend
+- **Next.js 15** con React 19 y TypeScript
+- **Tailwind CSS** + shadcn/ui (Radix UI)
+- **Three.js** (React Three Fiber + Drei) para modelos 3D
+- **Framer Motion** para animaciones
+- **Zustand** para manejo de estado
+- **next-themes** para modo oscuro/claro
 
-## Estructura del Proyecto
+### Backend
+- **Strapi 5** (CMS Headless)
+- **PostgreSQL** (producción) / SQLite (desarrollo)
+- **RESTful API** auto-generada
 
-```
-MeEcommerse/
-├── backend-ecommerce/     # API Strapi
-├── frontend-ecommerce/    # Aplicación Next.js
-├── docker-compose.yml     # Configuración Docker
-└── .env.example          # Variables de entorno ejemplo
-```
+### DevOps
+- **Docker** + Docker Compose
+- **Nginx** con SSL (Let's Encrypt)
+- **Dokploy** ready
 
-## Desarrollo Local
+## Características Principales
 
-### Opción 1: Con Docker Compose
+### E-commerce
+- ✅ Catálogo de productos con stock
+- ✅ Sistema de categorías
+- ✅ Carrito de compras
+- ✅ Sistema de pedidos con estados
+- ✅ Sistema de reviews con calificaciones
+- ✅ Autenticación de usuarios (login/registro)
+- ✅ Perfil de usuario y historial de pedidos
+- ✅ Favoritos/Wishlist
+
+### Visualización 3D
+- ✅ 5 modelos 3D procedurales premium (smartphone, laptop, airpods, tablet, smartwatch)
+- ✅ Soporte para modelos GLB/GLTF personalizados
+- ✅ Colores personalizables
+- ✅ Hero dinámico con carrusel 3D
+- ✅ Vista 3D en páginas de producto
+- ✅ Interactividad completa (rotar, zoom)
+
+### UI/UX
+- ✅ Diseño responsive moderno
+- ✅ Modo oscuro/claro
+- ✅ Animaciones fluidas
+- ✅ Componentes accesibles
+
+## Inicio Rápido
+
+### Desarrollo Local con Docker Compose
 
 ```bash
-# Copiar variables de entorno
-cp .env.example .env
+# 1. Clonar el repositorio
+git clone <tu-repo>
+cd MeEcommerse
 
+# 2. Configurar variables de entorno
+cp .env.example .env
 # Editar .env con tus valores
-# Iniciar todos los servicios
+
+# 3. Iniciar servicios
 docker-compose up -d
+
+# 4. Esperar a que los servicios estén listos
+docker-compose logs -f
 ```
 
-### Opción 2: Manual
+**URLs:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:1337
+- Panel Admin: http://localhost:1337/admin
+
+### Desarrollo Manual
 
 **Backend:**
 ```bash
@@ -47,6 +88,35 @@ cd frontend-ecommerce
 npm install
 npm run dev
 ```
+
+## Configuración Inicial
+
+### 1. Generar Secretos para Strapi
+
+```bash
+# Ejecutar 4 veces para generar diferentes secretos
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+Usar los valores generados para:
+- `JWT_SECRET`
+- `API_TOKEN_SALT`
+- `ADMIN_JWT_SECRET`
+- `TRANSFER_TOKEN_SALT`
+
+Para `APP_KEYS`, generar 4 valores y separarlos con comas.
+
+### 2. Configurar Permisos en Strapi
+
+1. Ir a http://localhost:1337/admin
+2. Crear cuenta de administrador
+3. Ir a **Settings → Users & Permissions → Roles → Public**
+4. Marcar permisos de lectura para:
+   - Product: `find`, `findOne`
+   - Category: `find`, `findOne`
+   - Hero-slide: `find`, `findOne`
+   - Review: `find`, `findOne`
+5. Guardar
 
 ## Despliegue en Dokploy
 
@@ -97,38 +167,110 @@ NEXT_PUBLIC_BACKEND_URL=https://tu-backend.dominio.com
 2. Anotar las credenciales
 3. Usarlas en las variables de entorno del backend
 
-## Generar Secretos para Strapi
+## Gestión de Contenido
 
+### Administrar desde Strapi
+
+Acceder al panel en http://localhost:1337/admin
+
+**Content Types disponibles:**
+- **Products** - Productos con stock, precios, imágenes, modelos 3D
+- **Categories** - Categorías de productos
+- **Hero Slides** - Slides del carrusel principal con modelos 3D
+- **Orders** - Pedidos de clientes
+- **Reviews** - Reseñas y calificaciones
+
+### Hero Slides con Modelos 3D
+
+Los slides del carrusel principal son 100% configurables desde Strapi:
+
+1. Ir a **Content Manager → Hero Slides**
+2. Crear nuevo slide
+3. Configurar:
+   - Textos (título, descripción, precio)
+   - Modelo 3D (elegir tipo: smartphone, laptop, etc.)
+   - Color del modelo (código hex)
+   - Orden de aparición
+   - Estado activo/inactivo
+
+**Modelos 3D disponibles:**
+- `smartphone` - iPhone Pro style
+- `laptop` - MacBook style
+- `airpods` - AirPods con estuche
+- `tablet` - iPad Pro style
+- `smartwatch` - Apple Watch style
+- `custom-glb` - Tu propio modelo GLB/GLTF
+
+## Comandos Útiles
+
+### Backend
 ```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+cd backend-ecommerce
+npm run develop     # Desarrollo con auto-reload
+npm run start       # Producción
+npm run build       # Build para producción
 ```
 
-Ejecutar 4 veces para generar:
-- JWT_SECRET
-- API_TOKEN_SALT
-- ADMIN_JWT_SECRET
-- TRANSFER_TOKEN_SALT
+### Frontend
+```bash
+cd frontend-ecommerce
+npm run dev         # Desarrollo
+npm run build       # Build para producción
+npm run start       # Servidor de producción
+npm run lint        # Linting
+```
 
-Para APP_KEYS, generar 4 valores y separarlos con comas.
+### Docker
+```bash
+# Ver logs
+docker-compose logs -f [servicio]
 
-## Características
+# Reiniciar servicio
+docker-compose restart [servicio]
 
-- ✅ Autenticación de usuarios (login/registro)
-- ✅ Gestión de productos con stock
-- ✅ Carrito de compras
-- ✅ Sistema de pedidos
-- ✅ Panel de administración (Strapi)
-- ✅ Diseño responsive
-- ✅ Optimización de imágenes
+# Detener todos los servicios
+docker-compose down
 
-## URLs
+# Limpiar volúmenes
+docker-compose down -v
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:1337
-- **Admin Panel**: http://localhost:1337/admin
+# Reconstruir después de cambios
+docker-compose up -d --build
+```
+
+## Troubleshooting
+
+### Backend no conecta a PostgreSQL
+- Verificar que PostgreSQL esté corriendo
+- Verificar credenciales en `.env`
+- Verificar que el puerto 5432 esté disponible
+
+### Frontend no muestra imágenes
+- Verificar `NEXT_PUBLIC_BACKEND_URL` en `.env.local`
+- Verificar que el backend esté corriendo
+- Agregar el dominio en `next.config.js` → `remotePatterns`
+
+### Modelos 3D no se ven
+- Verificar que Three.js se cargó correctamente
+- Abrir consola del navegador y verificar errores
+- Verificar que el campo `model3dType` en Strapi no sea `none`
+
+### Permisos de API
+- Ir a Strapi Admin → Settings → Roles → Public
+- Marcar permisos de lectura para los content types necesarios
 
 ## Documentación Adicional
 
-Ver:
-- `SETUP.md` - Guía de configuración detallada
-- `PROBLEMAS_Y_SOLUCIONES.md` - Troubleshooting
+Ver `GUIA_COMPLETA.md` para documentación detallada sobre:
+- Configuración avanzada de modelos 3D
+- Gestión completa de Hero Slides
+- Despliegue en producción con Docker
+- Troubleshooting completo
+
+## Recursos
+
+- [Documentación Next.js](https://nextjs.org/docs)
+- [Documentación Strapi](https://docs.strapi.io)
+- [Three.js](https://threejs.org/docs/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Tailwind CSS](https://tailwindcss.com/docs)

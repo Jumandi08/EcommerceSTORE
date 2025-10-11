@@ -10,14 +10,15 @@ import { ProductType } from "@/types/product";
 import { X, Plus, Minus, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface CartItemProps {
-  product: ProductType & { quantity: number };
+  product: ProductType & { quantity: number; selected?: boolean };
 }
 
 const CartItem = (props: CartItemProps) => {
   const { product } = props;
-  const { removeItem, incrementQuantity, decrementQuantity } = useCart();
+  const { removeItem, incrementQuantity, decrementQuantity, toggleSelectItem } = useCart();
 
   if (!product?.attributes) {
     return null;
@@ -35,6 +36,14 @@ const CartItem = (props: CartItemProps) => {
       className="group relative"
     >
       <div className="flex flex-col sm:flex-row gap-4 p-4 sm:p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+        {/* Checkbox */}
+        <div className="flex items-start pt-2">
+          <Checkbox
+            checked={product.selected || false}
+            onCheckedChange={() => toggleSelectItem(product.id)}
+          />
+        </div>
+
         {/* Product Image and Info Container for Mobile */}
         <div className="flex gap-4 flex-1">
           {/* Product Image */}

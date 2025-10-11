@@ -6,6 +6,7 @@ import {ProductType} from "@/types/product"
 
 interface CartItem extends ProductType {
     quantity: number;
+    selected?: boolean;
 }
 
 interface CartStore {
@@ -16,6 +17,11 @@ interface CartStore {
     updateQuantity: (id: number, quantity: number) => void
     incrementQuantity: (id: number) => void
     decrementQuantity: (id: number) => void
+    toggleSelectItem: (id: number) => void
+    selectAllItems: () => void
+    deselectAllItems: () => void
+    getSelectedItems: () => CartItem[]
+    removeSelectedItems: () => void
 }
 
 // Migration function to clean old format data
@@ -147,6 +153,42 @@ export const useCart = create(persist<CartStore>((set, get)=>({
         const item = currentItems.find(item => item.id === id);
         if (item) {
             get().updateQuantity(id, item.quantity - 1);
+        }
+    },
+
+    toggleSelectItem: (id: number) => {
+        set({
+            items: get().items.map(item =>
+                item.id === id ? { ...item, selected: !item.selected } : item
+            )
+        });
+    },
+
+    selectAllItems: () => {
+        set({
+            items: get().items.map(item => ({ ...item, selected: true }))
+        });
+    },
+
+    deselectAllItems: () => {
+        set({
+            items: get().items.map(item => ({ ...item, selected: false }))
+        });
+    },
+
+    getSelectedItems: () => {
+        return get().items.filter(item => item.selected);
+    },
+
+    removeSelectedItems: () => {
+        const selectedIds = get().items.filter(item => item.selected).map(item => item.id);
+        if (selectedIds.length > 0) {
+            set({
+                items: get().items.filter(item => !item.selected)
+            });
+            toast({
+                title: `${selectedIds.length} producto(s) eliminado(s) del carrito`
+            });
         }
     }
 

@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, Suspense } from "react"
 import dynamic from "next/dynamic"
+import { useGetHeroSlides, HeroSlideType } from "@/api/getHeroSlides"
 
 const Canvas = dynamic(() => import("@react-three/fiber").then((mod) => mod.Canvas), {
   ssr: false,
@@ -20,10 +21,7 @@ const Environment = dynamic(() => import("@react-three/drei").then((mod) => mod.
 const PerspectiveCamera = dynamic(() => import("@react-three/drei").then((mod) => mod.PerspectiveCamera), {
   ssr: false,
 })
-const Smartphone3D = dynamic(() => import("./3d-models/smartphone-3d"), {
-  ssr: false,
-})
-const Laptop3D = dynamic(() => import("./3d-models/laptop-3d"), {
+const CustomModel3D = dynamic(() => import("./3d-models/custom-model-3d"), {
   ssr: false,
 })
 
@@ -39,24 +37,24 @@ const heroSlides = [
     price: "$1,299",
     camera: "48MP",
     chip: "A17 Pro",
-    model3D: "iphone",
-    modelColor: "#6366f1",
+    model3D: "smartphone",
+    modelColor: "#1d4ed8",
     discountBadge: "🔥 -25% OFF",
   },
   {
     id: 2,
     badge: "NUEVO LANZAMIENTO",
-    title: "El futuro de la tecnología",
-    highlight: "está aquí",
+    title: "Sonido premium",
+    highlight: "sin cables",
     discount: "20%",
-    productName: "Samsung S24",
-    productVariant: "Ultra",
-    price: "$1,199",
-    camera: "200MP",
-    chip: "Snapdragon 8",
-    model3D: "samsung",
-    modelColor: "#0ea5e9",
-    discountBadge: "✨ -20% OFF",
+    productName: "AirPods Pro",
+    productVariant: "2da Generación",
+    price: "$249",
+    camera: "ANC",
+    chip: "H2 Chip",
+    model3D: "airpods",
+    modelColor: "#f5f5f7",
+    discountBadge: "🎧 -20% OFF",
   },
   {
     id: 3,
@@ -69,38 +67,67 @@ const heroSlides = [
     price: "$2,499",
     camera: "1080p HD",
     chip: "M3 Max",
-    model3D: "macbook",
-    modelColor: "#a855f7",
+    model3D: "laptop",
+    modelColor: "#c0c0c0",
     discountBadge: "💎 -30% OFF",
   },
+  {
+    id: 4,
+    badge: "BESTSELLER",
+    title: "Creatividad sin límites",
+    highlight: "donde sea",
+    discount: "15%",
+    productName: "iPad Pro",
+    productVariant: "12.9\" M2",
+    price: "$1,099",
+    camera: "12MP",
+    chip: "M2",
+    model3D: "tablet",
+    modelColor: "#2c2c2e",
+    discountBadge: "📱 -15% OFF",
+  },
+  {
+    id: 5,
+    badge: "TECNOLOGÍA WEARABLE",
+    title: "Tu salud en",
+    highlight: "tu muñeca",
+    discount: "18%",
+    productName: "Apple Watch",
+    productVariant: "Series 9",
+    price: "$399",
+    camera: "GPS",
+    chip: "S9 SiP",
+    model3D: "smartwatch",
+    modelColor: "#1a1a1a",
+    discountBadge: "⌚ -18% OFF",
+  },
 ]
-
-function Model3D({ type, color }: { type: string; color: string }) {
-  if (type === "macbook") {
-    return <Laptop3D color={color} />
-  }
-  return <Smartphone3D color={color} />
-}
 
 export default function HeroModernFull() {
   const router = useRouter()
   const [currentSlide, setCurrentSlide] = useState(0)
   const [direction, setDirection] = useState(0)
+  const { result: heroSlides, loading } = useGetHeroSlides()
 
+  // Auto-play slides
   useEffect(() => {
+    if (!heroSlides || heroSlides.length === 0) return
+
     const timer = setInterval(() => {
       nextSlide()
     }, 5000) // Auto-play cada 5 segundos
 
     return () => clearInterval(timer)
-  }, [currentSlide])
+  }, [currentSlide, heroSlides])
 
   const nextSlide = () => {
+    if (!heroSlides || heroSlides.length === 0) return
     setDirection(1)
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
   }
 
   const prevSlide = () => {
+    if (!heroSlides || heroSlides.length === 0) return
     setDirection(-1)
     setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)
   }
@@ -108,6 +135,30 @@ export default function HeroModernFull() {
   const goToSlide = (index: number) => {
     setDirection(index > currentSlide ? 1 : -1)
     setCurrentSlide(index)
+  }
+
+  // Loading state
+  if (loading) {
+    return (
+      <section className="relative mx-auto mt-10 max-w-7xl overflow-hidden rounded-2xl bg-gradient-to-br from-slate-400 via-slate-300 to-slate-200 p-6 shadow-lg dark:from-slate-800 dark:via-slate-700 dark:to-slate-600 md:p-12">
+        <div className="flex items-center justify-center h-96">
+          <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-rose-600"></div>
+        </div>
+      </section>
+    )
+  }
+
+  // No slides available - show default
+  if (!heroSlides || heroSlides.length === 0) {
+    return (
+      <section className="relative mx-auto mt-10 max-w-7xl overflow-hidden rounded-2xl bg-gradient-to-br from-slate-400 via-slate-300 to-slate-200 p-6 shadow-lg dark:from-slate-800 dark:via-slate-700 dark:to-slate-600 md:p-12">
+        <div className="text-center py-12">
+          <p className="text-xl text-gray-700 dark:text-gray-300">
+            No hay slides configurados. Por favor, agrega slides desde el panel de administración de Strapi.
+          </p>
+        </div>
+      </section>
+    )
   }
 
   const slide = heroSlides[currentSlide]
@@ -159,9 +210,9 @@ export default function HeroModernFull() {
               <Button
                 size="lg"
                 className="group rounded-full bg-white text-zinc-900 shadow-lg transition-all hover:bg-white/90 hover:shadow-xl dark:bg-zinc-900 dark:text-white"
-                onClick={() => router.push('/category/all')}
+                onClick={() => router.push(slide.ctaLink)}
               >
-                Comprar Ahora
+                {slide.ctaText}
                 <motion.span
                   className="ml-2 inline-block"
                   animate={{ x: [0, 5, 0] }}
@@ -235,14 +286,39 @@ export default function HeroModernFull() {
                 gl={{ antialias: true, alpha: true }}
                 dpr={[1, 2]}
               >
-                <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={45} />
+                <PerspectiveCamera
+                  makeDefault
+                  position={[
+                    slide.cameraPosition?.x || 0,
+                    slide.cameraPosition?.y || 0,
+                    slide.cameraPosition?.z || 10
+                  ]}
+                  fov={45}
+                />
                 <ambientLight intensity={0.8} />
                 <directionalLight position={[5, 5, 5]} intensity={1.2} />
                 <directionalLight position={[-5, -5, -5]} intensity={0.6} />
                 <pointLight position={[0, 5, 5]} intensity={1} color="#ffffff" />
 
                 <Suspense fallback={null}>
-                  <Model3D type={slide.model3D} color={slide.modelColor} />
+                  <CustomModel3D
+                    modelUrl={slide.model3dFileUrl || ''}
+                    animate={true}
+                    animationType={slide.animationType || 'float'}
+                    animationSpeed={slide.animationSpeed || 'normal'}
+                    animationIntensity={slide.animationIntensity || 'medium'}
+                    position={[
+                      slide.modelPosition?.x || 0,
+                      slide.modelPosition?.y || 0,
+                      slide.modelPosition?.z || 0
+                    ]}
+                    rotation={[
+                      slide.modelRotation?.x || 0,
+                      slide.modelRotation?.y || 0,
+                      slide.modelRotation?.z || 0
+                    ]}
+                    scale={slide.modelScale || 1.0}
+                  />
                   <Environment preset="city" />
                 </Suspense>
 
@@ -284,12 +360,12 @@ export default function HeroModernFull() {
                 </p>
                 <div className="mt-3 flex justify-center gap-4 text-xs">
                   <div>
-                    <p className="text-zinc-500">Cámara</p>
-                    <p className="font-semibold text-zinc-900 dark:text-white">{slide.camera}</p>
+                    <p className="text-zinc-500">{slide.spec1Label}</p>
+                    <p className="font-semibold text-zinc-900 dark:text-white">{slide.spec1Value}</p>
                   </div>
                   <div>
-                    <p className="text-zinc-500">Chip</p>
-                    <p className="font-semibold text-zinc-900 dark:text-white">{slide.chip}</p>
+                    <p className="text-zinc-500">{slide.spec2Label}</p>
+                    <p className="font-semibold text-zinc-900 dark:text-white">{slide.spec2Value}</p>
                   </div>
                 </div>
               </div>

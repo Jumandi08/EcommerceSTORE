@@ -18,7 +18,17 @@ module.exports = ({ env }) => [
   'strapi::cors',
   'strapi::poweredBy',
   'strapi::query',
-  'strapi::body',
+  {
+    name: 'strapi::body',
+    config: {
+      formLimit: '256mb', // Para datos de formularios
+      jsonLimit: '256mb', // Para JSON
+      textLimit: '256mb', // Para texto
+      formidable: {
+        maxFileSize: 256 * 1024 * 1024, // 256 MB en bytes para archivos
+      },
+    },
+  },
   {
     name: 'global::force-https',
     config: {},

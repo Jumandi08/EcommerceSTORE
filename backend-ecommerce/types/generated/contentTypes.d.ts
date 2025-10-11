@@ -555,6 +555,10 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     mainImage: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'categoryName'>;
+    subcategories: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::subcategory.subcategory'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -587,6 +591,109 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     siteDescription: Schema.Attribute.Text & Schema.Attribute.Required;
     siteName: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiHeroSlideHeroSlide extends Struct.CollectionTypeSchema {
+  collectionName: 'hero_slides';
+  info: {
+    description: 'Slides del carrusel hero 3D de la p\u00E1gina principal';
+    displayName: 'Hero Slide';
+    pluralName: 'hero-slides';
+    singularName: 'hero-slide';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    animationIntensity: Schema.Attribute.Enumeration<
+      ['subtle', 'medium', 'strong']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'medium'>;
+    animationSpeed: Schema.Attribute.Enumeration<['slow', 'normal', 'fast']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'normal'>;
+    animationType: Schema.Attribute.Enumeration<
+      [
+        'none',
+        'float',
+        'rotate',
+        'pulse',
+        'swing',
+        'bounce',
+        'orbit',
+        'wave',
+        'magnetic',
+      ]
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'float'>;
+    badge: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'NUEVO'>;
+    cameraPosition: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        x: 0;
+        y: 0;
+        z: 10;
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctaLink: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'/category/all'>;
+    ctaText: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Comprar Ahora'>;
+    discount: Schema.Attribute.String & Schema.Attribute.DefaultTo<'0%'>;
+    discountBadge: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'\uD83D\uDD25 OFERTA'>;
+    highlight: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::hero-slide.hero-slide'
+    > &
+      Schema.Attribute.Private;
+    model3dColor: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'#1a1a1a'>;
+    model3dFileUrl: Schema.Attribute.String & Schema.Attribute.DefaultTo<''>;
+    model3dType: Schema.Attribute.Enumeration<
+      ['smartphone', 'laptop', 'airpods', 'tablet', 'smartwatch', 'custom-glb']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'smartphone'>;
+    modelPosition: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        x: 0;
+        y: 0;
+        z: 0;
+      }>;
+    modelRotation: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        x: 0;
+        y: 0;
+        z: 0;
+      }>;
+    modelScale: Schema.Attribute.Float & Schema.Attribute.DefaultTo<1>;
+    order: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
+    price: Schema.Attribute.String & Schema.Attribute.Required;
+    productName: Schema.Attribute.String & Schema.Attribute.Required;
+    productVariant: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    spec1Label: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'C\u00E1mara'>;
+    spec1Value: Schema.Attribute.String & Schema.Attribute.DefaultTo<'48MP'>;
+    spec2Label: Schema.Attribute.String & Schema.Attribute.DefaultTo<'Chip'>;
+    spec2Value: Schema.Attribute.String & Schema.Attribute.DefaultTo<'A17 Pro'>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -669,6 +776,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     price: Schema.Attribute.Decimal;
     productName: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
     slug: Schema.Attribute.UID<'productName'>;
     stock: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
@@ -679,6 +787,99 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       > &
       Schema.Attribute.DefaultTo<0>;
     taste: Schema.Attribute.Enumeration<['Iphone', 'Android']>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiReviewReview extends Struct.CollectionTypeSchema {
+  collectionName: 'reviews';
+  info: {
+    description: 'Product reviews and ratings';
+    displayName: 'Review';
+    pluralName: 'reviews';
+    singularName: 'review';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    comment: Schema.Attribute.Text &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 1000;
+        minLength: 10;
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    helpful: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::review.review'
+    > &
+      Schema.Attribute.Private;
+    product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    rating: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<5>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+  };
+}
+
+export interface ApiSubcategorySubcategory extends Struct.CollectionTypeSchema {
+  collectionName: 'subcategories';
+  info: {
+    description: 'Subcategor\u00EDas para organizar productos dentro de categor\u00EDas principales';
+    displayName: 'Subcategory';
+    pluralName: 'subcategories';
+    singularName: 'subcategory';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    icon: Schema.Attribute.String & Schema.Attribute.DefaultTo<'Package'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::subcategory.subcategory'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'subcategoryName'>;
+    subcategoryName: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1200,8 +1401,11 @@ declare module '@strapi/strapi' {
       'api::author.author': ApiAuthorAuthor;
       'api::category.category': ApiCategoryCategory;
       'api::global.global': ApiGlobalGlobal;
+      'api::hero-slide.hero-slide': ApiHeroSlideHeroSlide;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
+      'api::review.review': ApiReviewReview;
+      'api::subcategory.subcategory': ApiSubcategorySubcategory;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

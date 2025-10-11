@@ -18,7 +18,8 @@ import {
   Edit,
   BarChart3,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Sparkles
 } from 'lucide-react'
 import { formatPrice } from '@/lib/formatPrice'
 
@@ -149,6 +150,10 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex gap-3">
+            <Button variant="outline" onClick={() => router.push('/admin/hero-slides')}>
+              <Sparkles className="w-4 h-4 mr-2" />
+              Hero Slides
+            </Button>
             <Button variant="outline">
               <BarChart3 className="w-4 h-4 mr-2" />
               Exportar Reportes
@@ -237,6 +242,49 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Quick Access Card */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Acceso Rápido</CardTitle>
+          <CardDescription>Gestiona los elementos principales de tu tienda</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Button
+              variant="outline"
+              className="h-20 flex flex-col items-center justify-center gap-2"
+              onClick={() => router.push('/admin/hero-slides')}
+            >
+              <Sparkles className="w-6 h-6 text-rose-600" />
+              <span className="text-sm font-medium">Hero Slides</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-20 flex flex-col items-center justify-center gap-2"
+              onClick={() => router.push('/admin/products')}
+            >
+              <Package className="w-6 h-6 text-blue-600" />
+              <span className="text-sm font-medium">Productos</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-20 flex flex-col items-center justify-center gap-2"
+              onClick={() => router.push('/admin/orders')}
+            >
+              <ShoppingCart className="w-6 h-6 text-purple-600" />
+              <span className="text-sm font-medium">Pedidos</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-20 flex flex-col items-center justify-center gap-2"
+            >
+              <Users className="w-6 h-6 text-orange-600" />
+              <span className="text-sm font-medium">Clientes</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Top Products */}
