@@ -1,20 +1,19 @@
-'use strict';
-
 module.exports = {
-  /**
-   * An asynchronous register function that runs before
-   * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
-   */
-  register(/*{ strapi }*/) {},
+  register({ strapi }) {
+    // Trust proxy - this is crucial for detecting HTTPS behind reverse proxy
+    strapi.server.app.proxy = true;
 
-  /**
-   * An asynchronous bootstrap function that runs before
-   * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
-   */
-  bootstrap(/*{ strapi }*/) {},
+    // Add middleware to force HTTPS detection from proxy headers
+    strapi.server.app.use((ctx, next) => {
+      // Koa uses ctx.protocol which checks X-Forwarded-Proto when proxy=true
+      // Force HTTPS detection
+      if (ctx.request.headers['x-forwarded-proto'] === 'https') {
+        ctx.request.secure = true;
+        ctx.protocol = 'https';
+      }
+      return next();
+    });
+  },
+
+  bootstrap({ strapi }) {},
 };
